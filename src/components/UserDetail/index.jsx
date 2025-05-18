@@ -3,18 +3,19 @@ import { Typography, Card, CardContent, Button } from "@mui/material";
 import { useParams, Link } from "react-router-dom";
 import models from "../../modelData/models";
 import "./styles.css";
+import fetchModel from "../../lib/fetchModelData";
 
 function UserDetail({ setContext }) {
   const { userId } = useParams(); 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchedUser = models.userModel(userId);
-    setUser(fetchedUser);
-
-    if (fetchedUser) {
-      setContext(`${fetchedUser.first_name} ${fetchedUser.last_name}`);
-    }
+    fetchModel(`/api/user/${userId}`).then(data => {
+      if (data) {
+        setUser(data);
+        setContext(`${data.first_name} ${data.last_name}`);
+      }
+    });
   }, [userId, setContext]);
 
   if (!user) {

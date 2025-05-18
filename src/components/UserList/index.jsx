@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
 import models from '../../modelData/models';
+import fetchModel from '../../lib/fetchModelData';
 
 function UserList() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const userList = models.userListModel();
-    setUsers(userList);
+    fetchModel('/api/user/list').then(data => {
+      if (data) setUsers(data);
+    });
   }, []);
 
   return (
@@ -21,7 +23,7 @@ function UserList() {
             component={Link}
             to={`/users/${user._id}`}
           >
-            <ListItemText primary={`${user.first_name} ${user.last_name}`} />
+            <ListItemText primary={`${user.last_name} ${user.first_name}`} />
           </ListItem>
         ))}
       </List>

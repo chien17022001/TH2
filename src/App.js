@@ -12,7 +12,6 @@ const App = () => {
   const [context, setContext] = useState("Welcome to the app!");
 
   useEffect(() => {
-    // Chỉ thiết lập context ban đầu nếu cần
     setContext("Welcome to the app!");
   }, []);
 

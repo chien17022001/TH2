@@ -1,18 +1,25 @@
-import React, { useEffect } from "react";
-import { Typography, Box, Divider } from "@mui/material";
-import { useParams, Link as RouterLink } from "react-router-dom";
-import models from '../../modelData/models';
+// components/UserPhotos/index.jsx
+import React, { useEffect, useState } from "react";
+import { Typography, Box } from "@mui/material";
+import { useParams } from "react-router-dom";
+import fetchModel from "../../lib/fetchModelData";
 import "./styles.css";
 
 function UserPhotos({ setContext }) {
   const { userId } = useParams();
-  const photos = models.photoOfUserModel(userId);
+  const [photos, setPhotos] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const user = models.userModel(userId);
-    if (user) {
-      setContext(`Photos of ${user.first_name} ${user.last_name}`);
-    }
+    fetchModel(`/api/user/photosOfUser/${userId}`).then((data) => {
+      if (data) setPhotos(data);
+    });
+    fetchModel(`/api/user/${userId}`).then((data) => {
+      if (data) {
+        setUser(data);
+        setContext(`Photos of ${data.first_name} ${data.last_name}`);
+      }
+    });
   }, [userId, setContext]);
 
   return (
@@ -33,7 +40,14 @@ function UserPhotos({ setContext }) {
             <Typography variant="caption" display="block" gutterBottom>
               Taken on: {new Date(photo.date_time).toLocaleString()}
             </Typography>
-            {/* Additional photo comments and details */}
+
+            {photo.comments?.map((comment) => (
+              <Box key={comment._id} sx={{ pl: 2 }}>
+                <Typography variant="body2">
+                  <strong>{comment.user.first_name}:</strong> {comment.comment}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         ))
       )}
